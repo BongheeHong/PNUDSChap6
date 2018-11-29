@@ -25,8 +25,8 @@ public:
 	void OutA(int);
 
 	Graph(int nodeSize):nodeSize(nodeSize) {
-		for (int i = 0; i < nodeSize; i++) {
-			for (int k = 0; k < nodeSize; k++) {
+		for (int i = 0; i < nmax; i++) {
+			for (int k = 0; k < nmax; k++) {
 				length[i][k] = MAX_WEIGHT;
 			}
 		}
@@ -44,6 +44,8 @@ public:
 		}
 		return true;
 	}
+
+	void defaultSetup();
 };
 
 void Graph::displayConnectionMatrix() {
@@ -86,7 +88,10 @@ void Graph::OutA(int n){
 	for (int i = 0; i < n; i++){
 		cout << "startNode = " << i << ": ";
 		for (int j = 0; j < n; j++) {
-			if (a[i][j] > MAX_WEIGHT - 100000)//100000 is one a big enough number
+			if (i == j) {
+				cout << "0" << "  ";
+			}
+			else if (a[i][j] > MAX_WEIGHT - 100000)//100000 is one a big enough number
 				cout << "¡Þ" << "  ";
 			else cout << a[i][j] << "  ";
 		}
@@ -188,6 +193,21 @@ void Graph::AllLengths(const int n)
 	OutA(n);
 }
 
+void Graph::defaultSetup() {
+	this->nodeSize = 7;
+
+	insertEdge(0, 1, 6);
+	insertEdge(0, 2, 5);
+	insertEdge(0, 3, 5);
+	insertEdge(1, 4, -1);
+	insertEdge(2, 1, -2);
+	insertEdge(2, 4, 1);
+	insertEdge(3, 2, -2);
+	insertEdge(3, 5, -1);
+	insertEdge(4, 6, 3);
+	insertEdge(5, 6, 3);
+}
+
 
 int main(void)
 {
@@ -199,8 +219,8 @@ int main(void)
 
 	while (select != '0')
 	{
-		cout << "\nSelect command 1: Add edges and Weight, 2: Display Adjacency Lists, 3: single source/all destinations: non-negative edge costs, "
-			<< "4:  single source/all destinations: negative edge costs, 5. All-pairs shortest paths, 6. Quit => ";
+		cout << "\nSelect command 1: Add edges and Weight, 2: use default edges and Weight, 3: Display Adjacency Lists, 4: single source/all destinations: non-negative edge costs, "
+			<< "5:  single source/all destinations: negative edge costs, 6. All-pairs shortest paths, 7. Quit => ";
 		cin >> select;
 		switch (select) {
 		case 1:
@@ -215,10 +235,15 @@ int main(void)
 			g.insertEdge(start, end, weight);
 			break;
 		case 2:
-			//display
+			g.defaultSetup();
+			n = 7;
 			g.displayConnectionMatrix();
 			break;
 		case 3:
+			//display
+			g.displayConnectionMatrix();
+			break;
+		case 4:
 			cout << "\nsingle source/all destinations: non-negative edge costs: " << endl;
 			if (!g.isNonNegativeEdgeCost()) {
 				cout << "Negative edge cost exists!!" << endl;
@@ -231,18 +256,18 @@ int main(void)
 
 			g.ShortestPath(n, start);
 			break;
-		case 4:
+		case 5:
 			cout << "\nsingle source/all destinations: negative edge costs: " << endl;
 			cout << "\n ----------> Input start node: ";
 			cin >> start;
 
 			g.BellmanFord(n, start);
 			break;
-		case 5:
+		case 6:
 			cout << "\nAll-pairs shortest paths:" << endl;
 			g.AllLengths(n);
 			break;
-		case 6: 
+		case 7: 
 			exit(0);
 		default:
 			cout << "WRONG INPUT  " << endl;
