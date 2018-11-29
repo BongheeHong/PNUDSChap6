@@ -21,7 +21,7 @@ public:
 	void BellmanFord2(const int, const int);
 	void AllLengths(const int);
 	int choose(const int);
-	void Out(int);
+	void Out(int startNode, int n);
 	void OutA(int);
 
 	Graph(int nodeSize):nodeSize(nodeSize) {
@@ -70,10 +70,13 @@ void Graph::insertEdge(int start, int end, int weight) {
 	length[start][end] = weight;
 }
 
-void Graph::Out(int n) {
-	cout << endl;
+void Graph::Out(int startNode, int n) {
+	//cout << endl;
 	for (int i = 0; i < n; i++) {
-		if (dist[i] == MAX_WEIGHT) 
+		if (i == startNode) {
+			cout << "0" << ", ";
+		}
+		else if (dist[i] == MAX_WEIGHT) 
 			cout << "¡Þ" << ", ";
 		else 
 			cout << dist[i] << ", ";
@@ -84,7 +87,7 @@ void Graph::Out(int n) {
 
 
 void Graph::OutA(int n){
-	cout << endl;
+	//cout << endl;
 	for (int i = 0; i < n; i++){
 		cout << "startNode = " << i << ": ";
 		for (int j = 0; j < n; j++) {
@@ -120,7 +123,7 @@ void Graph::ShortestPath(const int n, const int v)
 					dist[w] = dist[u] + length[u][w];
 	} 
 
-	Out(n);
+	Out(v, n);
 }
 
 int Graph::choose(const int n)
@@ -138,8 +141,11 @@ void Graph::BellmanFord(const int n, const int v){
 	for (int i = 0; i < n; i++) 
 		dist[i] = length[v][i];
 	//
-	for (int k = 2; k <= n - 1; k++){
-		Out(n);
+	cout << endl;
+	int k = 0;
+	for (k = 1; k <= n - 1; k++){
+		cout << "k = " << k << ", ";
+		Out(v, n);
 		for (int u = 0; u < n; u++) {
 			if (u != v) {
 				for (int i = 0; i < n; i++) {
@@ -152,7 +158,8 @@ void Graph::BellmanFord(const int n, const int v){
 			}
 		}
 	}
-	Out(n);
+	//cout << "k = " << k << ", ";
+	//Out(n);
 }
 
 void Graph::BellmanFord2(const int n, const int v)
@@ -183,13 +190,16 @@ void Graph::AllLengths(const int n)
 		for (int j = 0; j < n; j++)
 			a[i][j] = length[i][j];   // copy length into a
 	
-	for (int k = 0; k < n; k++) {  // for a path with highest vertex index k
+	int k = 0;
+	for (; k < n; k++) {  // for a path with highest vertex index k
+		cout << "\n k = " << k << endl;
 		OutA(n);
 		for (int i = 0; i < n; i++)  // for all possible pairs of vertices
 			for (int j = 0; j < n; j++)
 				if ((a[i][k] + a[k][j]) < a[i][j]) 
 					a[i][j] = a[i][k] + a[k][j];
 	}
+	cout << "\n k = " << k << endl;
 	OutA(n);
 }
 
