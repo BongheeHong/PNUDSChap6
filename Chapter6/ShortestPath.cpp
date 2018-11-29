@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <stdlib.h>
 using namespace std;
 
@@ -77,7 +77,7 @@ void Graph::Out(int startNode, int n) {
 			cout << "0" << ", ";
 		}
 		else if (dist[i] == MAX_WEIGHT) 
-			cout << "¡Þ" << ", ";
+			cout << "âˆž" << ", ";
 		else 
 			cout << dist[i] << ", ";
 	}
@@ -95,7 +95,7 @@ void Graph::OutA(int n){
 				cout << "0" << "  ";
 			}
 			else if (a[i][j] > MAX_WEIGHT - 100000)//100000 is one a big enough number
-				cout << "¡Þ" << "  ";
+				cout << "âˆž" << "  ";
 			else cout << a[i][j] << "  ";
 		}
 		cout << endl;
