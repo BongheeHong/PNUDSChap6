@@ -44,8 +44,6 @@ public:
 		}
 		return true;
 	}
-
-	void defaultSetup();
 };
 
 void Graph::displayConnectionMatrix() {
@@ -114,6 +112,7 @@ void Graph::ShortestPath(const int n, const int v)
 
 	//Out(n);
 	for (int i = 0; i < n - 2; i++) { // determine n-1 paths from vertex v
+		Out(i, n);
 		int u = choose(n);  // choose returns a value u:
 							// dist[u] = minimum dist[w], where s[w] = false
 		s[u] = true;
@@ -203,34 +202,69 @@ void Graph::AllLengths(const int n)
 	OutA(n);
 }
 
-void Graph::defaultSetup() {
-	this->nodeSize = 7;
+Graph * defaultSetup1() {
+	Graph *g = new Graph(7);
 
-	insertEdge(0, 1, 6);
-	insertEdge(0, 2, 5);
-	insertEdge(0, 3, 5);
-	insertEdge(1, 4, -1);
-	insertEdge(2, 1, -2);
-	insertEdge(2, 4, 1);
-	insertEdge(3, 2, -2);
-	insertEdge(3, 5, -1);
-	insertEdge(4, 6, 3);
-	insertEdge(5, 6, 3);
+	g->insertEdge(0, 1, 6);
+	g->insertEdge(0, 2, 5);
+	g->insertEdge(0, 3, 5);
+	g->insertEdge(1, 4, -1);
+	g->insertEdge(2, 1, -2);
+	g->insertEdge(2, 4, 1);
+	g->insertEdge(3, 2, -2);
+	g->insertEdge(3, 5, -1);
+	g->insertEdge(4, 6, 3);
+	g->insertEdge(5, 6, 3);
+
+	return g;
 }
 
 
+Graph *defaultSetup2() {
+	Graph *g = new Graph(8);
+
+	g->insertEdge(1, 0, 300);
+	g->insertEdge(2, 1, 800);
+	g->insertEdge(2, 0, 1000);
+	g->insertEdge(3, 2, 1200);
+	g->insertEdge(4, 3, 1500);
+	g->insertEdge(4, 5, 250);
+	g->insertEdge(5, 3, 1000);
+	g->insertEdge(5, 7, 1400);
+	g->insertEdge(5, 6, 900);
+	g->insertEdge(6, 7, 1000);
+	g->insertEdge(7, 0, 1700);
+	
+	return g;
+}
+
 int main(void)
 {
+	Graph *g = nullptr;
 	int select = 0, n, start = -1, end = -1, weight = -1;
-	cout << "Input the total node number: ";
-	cin >> n;
-	Graph g(n);
+	cout << "1: input total node number, 2: use setup1, 3: use setup2 ";
+	cin >> select;
+	if (select == 1) {
+		cout << "Input the total node number: ";
+		cin >> n;
+		g = new Graph(n);
+	}
+	else if (select == 2) {
+		g = defaultSetup1();
+		n = 7;
+	}
+	else if (select == 3) {
+		g = defaultSetup2();
+		n = 8;
+	}
+	
+	
 	Graph *spanningTree = nullptr;
 
 	while (select != '0')
 	{
-		cout << "\nSelect command 1: Add edges and Weight, 2: use default edges and Weight, 3: Display Adjacency Lists, 4: single source/all destinations: non-negative edge costs, "
-			<< "5:  single source/all destinations: negative edge costs, 6. All-pairs shortest paths, 7. Quit => ";
+		cout << "\nSelect command 1: Add edges and Weight, 2: Display Adjacency Lists, 3: single source/all destinations: non-negative edge costs, "
+			<< "4:  single source/all destinations: negative edge costs, 5. All-pairs shortest paths, 6. Quit => ";
 		cin >> select;
 		switch (select) {
 		case 1:
@@ -242,20 +276,15 @@ int main(void)
 			cout << "--------Input  weight: ";
 			cin >> weight;
 
-			g.insertEdge(start, end, weight);
+			g->insertEdge(start, end, weight);
 			break;
 		case 2:
-			g.defaultSetup();
-			n = 7;
-			g.displayConnectionMatrix();
+			//display
+			g->displayConnectionMatrix();
 			break;
 		case 3:
-			//display
-			g.displayConnectionMatrix();
-			break;
-		case 4:
 			cout << "\nsingle source/all destinations: non-negative edge costs: " << endl;
-			if (!g.isNonNegativeEdgeCost()) {
+			if (!g->isNonNegativeEdgeCost()) {
 				cout << "Negative edge cost exists!!" << endl;
 				cout << "Please re-build the graph with non-negative edge costs." << endl;
 				break;
@@ -264,20 +293,20 @@ int main(void)
 			cout << "\n ----------> Input start node: ";
 			cin >> start;
 
-			g.ShortestPath(n, start);
+			g->ShortestPath(n, start);
 			break;
-		case 5:
+		case 4:
 			cout << "\nsingle source/all destinations: negative edge costs: " << endl;
 			cout << "\n ----------> Input start node: ";
 			cin >> start;
 
-			g.BellmanFord(n, start);
+			g->BellmanFord(n, start);
 			break;
-		case 6:
+		case 5:
 			cout << "\nAll-pairs shortest paths:" << endl;
-			g.AllLengths(n);
+			g->AllLengths(n);
 			break;
-		case 7: 
+		case 6: 
 			exit(0);
 		default:
 			cout << "WRONG INPUT  " << endl;
@@ -285,6 +314,7 @@ int main(void)
 			break;
 		}
 	}
+	delete g;
 	return 0;
 }
 
