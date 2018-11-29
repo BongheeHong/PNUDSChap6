@@ -132,8 +132,9 @@ int Graph::choose(const int n)
 void Graph::BellmanFord(const int n, const int v){
 	for (int i = 0; i < n; i++) 
 		dist[i] = length[v][i];
-	//Out(n);
+	//
 	for (int k = 2; k <= n - 1; k++){
+		Out(n);
 		for (int u = 0; u < n; u++) {
 			if (u != v) {
 				for (int i = 0; i < n; i++) {
@@ -176,8 +177,9 @@ void Graph::AllLengths(const int n)
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
 			a[i][j] = length[i][j];   // copy length into a
-	//OutA(n);
+	
 	for (int k = 0; k < n; k++) {  // for a path with highest vertex index k
+		OutA(n);
 		for (int i = 0; i < n; i++)  // for all possible pairs of vertices
 			for (int j = 0; j < n; j++)
 				if ((a[i][k] + a[k][j]) < a[i][j]) 
