@@ -14,17 +14,18 @@ private:
 	bool s[nmax]; //
 	int newdist[nmax];
 
-	int nodeSize;
+	const int n;
 public:
-	void ShortestPath(const int, const int);
-	void BellmanFord(const int, const int);
-	void BellmanFord2(const int, const int);
-	void AllLengths(const int);
-	int choose(const int);
+	void ShortestPath(const int);
+	void ShortestPath_display(const int);
+	void BellmanFord(const int);
+	void BellmanFord2(const int);
+	void AllLengths();
+	int choose();
 	void Out(int startNode, int n);
 	void OutA(int);
 
-	Graph(int nodeSize):nodeSize(nodeSize) {
+	Graph(int nodeSize):n(nodeSize) {
 		for (int i = 0; i < nmax; i++) {
 			for (int k = 0; k < nmax; k++) {
 				length[i][k] = MAX_WEIGHT;
@@ -37,19 +38,29 @@ public:
 	void displayConnectionMatrix();
 
 	bool isNonNegativeEdgeCost() {
-		for (int i = 0; i < nodeSize; i++) {
-			for (int k = 0; k < nodeSize; k++) {
+		for (int i = 0; i < n; i++) {
+			for (int k = 0; k < n; k++) {
 				if (length[i][k] < 0) return false;
 			}
 		}
 		return true;
 	}
+
+private:
+	void displayS() {
+		cout << "[";
+		for (int i = 0; i < n; i++) {
+			if (s[i]) cout << i << ",";
+			else cout << "  ";
+		}
+		cout << "]; ";
+	}
 };
 
 void Graph::displayConnectionMatrix() {
-	for (int i = 0; i < nodeSize; i++) {
+	for (int i = 0; i < n; i++) {
 		bool exists = false;
-		for (int k = 0; k < nodeSize; k++) {
+		for (int k = 0; k < n; k++) {
 			if (length[i][k] == MAX_WEIGHT) continue;
 			exists = true;
 			cout << i << " -> " << k << "(weight=" << length[i][k] << "), ";
@@ -60,8 +71,8 @@ void Graph::displayConnectionMatrix() {
 
 
 void Graph::insertEdge(int start, int end, int weight) {
-	if (start >= nodeSize || end >= nodeSize || start < 0 || end < 0) {
-		cout << "the input node is out of bound, the biggest node is " << (nodeSize - 1) << endl;
+	if (start >= n || end >= n || start < 0 || end < 0) {
+		cout << "the input node is out of bound, the biggest node is " << (n - 1) << endl;
 		return;
 	}
 
@@ -90,7 +101,7 @@ void Graph::OutA(int n){
 		cout << "startNode = " << i << ": ";
 		for (int j = 0; j < n; j++) {
 			if (i == j) {
-				cout << "0" << "  ";
+				cout << "0 " << "  ";
 			}
 			else if (a[i][j] > MAX_WEIGHT - 100000)//100000 is one a big enough number
 				cout << "∞" << "  ";
@@ -101,7 +112,7 @@ void Graph::OutA(int n){
 }
 
 
-void Graph::ShortestPath(const int n, const int v)
+void Graph::ShortestPath(const int v)
 {
 	for (int i = 0; i < n; i++) {// initialize
 		s[i] = false; 
@@ -113,7 +124,7 @@ void Graph::ShortestPath(const int n, const int v)
 	//Out(n);
 	for (int i = 0; i < n - 2; i++) { // determine n-1 paths from vertex v
 		Out(i, n);
-		int u = choose(n);  // choose returns a value u:
+		int u = choose();  // choose returns a value u:
 							// dist[u] = minimum dist[w], where s[w] = false
 		s[u] = true;
 		for (int w = 0; w < n; w++)
@@ -125,9 +136,55 @@ void Graph::ShortestPath(const int n, const int v)
 	Out(v, n);
 }
 
-int Graph::choose(const int n)
+void Graph::ShortestPath_display(const int v)
 {
-	int prevmax = -1; int index = -1;
+	for (int i = 0; i < n; i++) {// initialize
+		s[i] = false;
+		dist[i] = length[v][i];
+	}
+
+	//>>>>>>>>>>display
+	cout << 1 << "; ";
+	displayS();
+	cout << "vertex selected: " << v << "; ";
+	Out(v, n);
+	//<<<<<<<<<<
+
+	s[v] = true;
+	dist[v] = 0;
+
+	
+
+	//Out(n);
+	int i = 0;
+	for (; i < n - 2; i++) { // determine n-1 paths from vertex v
+		
+		int u = choose();  // choose returns a value u:
+							// dist[u] = minimum dist[w], where s[w] = false
+		cout << i + 2 << "; ";
+		displayS();
+
+		s[u] = true;
+
+		cout << "vertex selected: " << u << "; ";
+		Out(v, n);
+		
+		for (int w = 0; w < n; w++)
+			if (!s[w])
+				if (dist[u] + length[u][w] < dist[w])
+					dist[w] = dist[u] + length[u][w];
+	}
+	cout << i + 2 << ", ";
+	displayS();
+	cout << ":                   " << ", ";
+	Out(v, n);
+}
+
+
+int Graph::choose()
+{
+	int prevmax = -1;
+	int index = -1;
 	for (int i = 0; i < n; i++)
 		if ((!s[i]) && ((prevmax == -1) || (dist[i] < prevmax)))
 		{
@@ -136,7 +193,7 @@ int Graph::choose(const int n)
 	return index;
 }
 
-void Graph::BellmanFord(const int n, const int v){
+void Graph::BellmanFord(const int v){
 	for (int i = 0; i < n; i++) 
 		dist[i] = length[v][i];
 	//
@@ -161,7 +218,7 @@ void Graph::BellmanFord(const int n, const int v){
 	//Out(n);
 }
 
-void Graph::BellmanFord2(const int n, const int v)
+void Graph::BellmanFord2(const int v)
 // Single source all destination shortest paths with negative edge lengths
 {
 	for (int i = 0; i < n; i++) 
@@ -181,7 +238,7 @@ void Graph::BellmanFord2(const int n, const int v)
 	}
 }
 
-void Graph::AllLengths(const int n)
+void Graph::AllLengths()
 // length[n][n] is the adjacency matrix of a graph with n vertices.
 // a[i][j] is the length of the shortest path between i and j
 {
@@ -191,14 +248,14 @@ void Graph::AllLengths(const int n)
 	
 	int k = 0;
 	for (; k < n; k++) {  // for a path with highest vertex index k
-		cout << "\n k = " << k << endl;
+		cout << "\n A[" << k-1 << "]" << endl;
 		OutA(n);
 		for (int i = 0; i < n; i++)  // for all possible pairs of vertices
 			for (int j = 0; j < n; j++)
 				if ((a[i][k] + a[k][j]) < a[i][j]) 
 					a[i][j] = a[i][k] + a[k][j];
 	}
-	cout << "\n k = " << k << endl;
+	cout << "\n A[" << k - 1 << "]" << endl;
 	OutA(n);
 }
 
@@ -238,11 +295,22 @@ Graph *defaultSetup2() {
 	return g;
 }
 
+Graph * setup_allPairsShortestPaths() {
+	Graph *g = new Graph(3);
+	g->insertEdge(0, 1, 4);
+	g->insertEdge(0, 2, 11);
+	g->insertEdge(1, 0, 6);
+	g->insertEdge(1, 2, 2);
+	g->insertEdge(2, 0, 3);
+	return g;
+}
+
 int main(void)
 {
 	Graph *g = nullptr;
 	int select = 0, n, start = -1, end = -1, weight = -1;
-	cout << "1: input total node number, 2: use setup1, 3: use setup2 ";
+	cout << "1: custom setup, 2: Default Setup1[shortest path(non-negative)], "
+		 << "3: Default Setup2[single source/all destinations(negative edge costs)], 4: Default Setup3[allPairsShortestPaths]";
 	cin >> select;
 	if (select == 1) {
 		cout << "Input the total node number: ";
@@ -250,21 +318,22 @@ int main(void)
 		g = new Graph(n);
 	}
 	else if (select == 2) {
-		g = defaultSetup1();
-		n = 7;
+		g = defaultSetup2();
 	}
 	else if (select == 3) {
-		g = defaultSetup2();
-		n = 8;
+		g = defaultSetup1();
 	}
-	
-	
-	Graph *spanningTree = nullptr;
+	else if (select == 4) {
+		g = setup_allPairsShortestPaths();
+	}
+	else {
+		throw "illegal input";
+	}
 
 	while (select != '0')
 	{
-		cout << "\nSelect command 1: Add edges and Weight, 2: Display Adjacency Lists, 3: single source/all destinations: non-negative edge costs, "
-			<< "4:  single source/all destinations: negative edge costs, 5. All-pairs shortest paths, 6. Quit => ";
+		cout << "\nSelect command 1: AddEdge, 2: AdjacencyLists, 3: singleSource/all destinations(non-negative edge cost)"
+			<< "4:  single source/all destinations(negative edge costs), 5. All-pairs shortest paths, 6. Quit => ";
 		cin >> select;
 		switch (select) {
 		case 1:
@@ -293,18 +362,18 @@ int main(void)
 			cout << "\n ----------> Input start node: ";
 			cin >> start;
 
-			g->ShortestPath(n, start);
+			g->ShortestPath_display(start);
 			break;
 		case 4:
 			cout << "\nsingle source/all destinations: negative edge costs: " << endl;
 			cout << "\n ----------> Input start node: ";
 			cin >> start;
 
-			g->BellmanFord(n, start);
+			g->BellmanFord(start);
 			break;
 		case 5:
 			cout << "\nAll-pairs shortest paths:" << endl;
-			g->AllLengths(n);
+			g->AllLengths();
 			break;
 		case 6: 
 			exit(0);
